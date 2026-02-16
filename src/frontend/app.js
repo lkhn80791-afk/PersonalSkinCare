@@ -5,6 +5,7 @@ const screens = {
   skin: document.getElementById('skin-screen'),
   dashboard: document.getElementById('dashboard-screen'),
   routine: document.getElementById('routine-screen'),
+  community: document.getElementById('community-screen'),
 };
 
 const authTitle = document.getElementById('auth-title');
@@ -27,6 +28,21 @@ const routineContent = document.getElementById('routine-content');
 const morningList = document.getElementById('morning-list');
 const eveningList = document.getElementById('evening-list');
 const backToDashboardBtn = document.getElementById('back-to-dashboard');
+
+const ageInput = document.getElementById('age');
+const darkCirclesInput = document.getElementById('dark-circles');
+const acneInput = document.getElementById('acne');
+const drynessInput = document.getElementById('dryness');
+const budgetInput = document.getElementById('budget');
+
+const goCommunityBtn = document.getElementById('go-community');
+const communityError = document.getElementById('community-error');
+const postForm = document.getElementById('post-form');
+const postContentInput = document.getElementById('post-content');
+const postsList = document.getElementById('posts-list');
+const backToDashboardFromCommunityBtn = document.getElementById(
+  'back-to-dashboard-from-community',
+);
 
 let isLoginMode = true;
 let authToken = null;
@@ -122,7 +138,7 @@ authToggle.addEventListener('click', () => {
   setAuthMode(!isLoginMode);
 });
 
-document.getElementById('skin-options').addEventListener('click', (event) => {
+document.getElementById('skin-options').addEventListener('click', async (event) => {
   const target = event.target.closest('[data-skin]');
   if (!target) return;
   currentSkinType = target.getAttribute('data-skin');
@@ -130,6 +146,30 @@ document.getElementById('skin-options').addEventListener('click', (event) => {
   const name = currentUser?.first_name || 'there';
   dashboardTitle.textContent = `Hi, ${name}`;
   dashboardSkin.textContent = `Skin type: ${currentSkinType}`;
+
+  const profile = {
+    skin_type: currentSkinType,
+    age: Number(ageInput.value || 0) || null,
+    dark_circles: darkCirclesInput.value || null,
+    acne: acneInput.value || null,
+    dryness: drynessInput.value || null,
+    budget: Number(budgetInput.value || 0) || null,
+  };
+
+  try {
+    if (authToken) {
+      await apiRequest('/profiles', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(profile),
+      });
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to save profile', error);
+  }
 
   showScreen('dashboard');
 });
@@ -161,14 +201,12 @@ viewRoutineBtn.addEventListener('click', async () => {
     eveningList.innerHTML = '';
 
     morning.forEach((p) => {
-      const li = document.createElement('li');
-      li.innerHTML = `${p.name} <span class="step-type">(${p.step_type})</span>`;
+      const li = createProductCheckboxItem(p, 'morning');
       morningList.appendChild(li);
     });
 
     evening.forEach((p) => {
-      const li = document.createElement('li');
-      li.innerHTML = `${p.name} <span class="step-type">(${p.step_type})</span>`;
+      const li = createProductCheckboxItem(p, 'evening');
       eveningList.appendChild(li);
     });
 
@@ -185,7 +223,99 @@ backToDashboardBtn.addEventListener('click', () => {
   showScreen('dashboard');
 });
 
-// Initial state
+function getRoutineStorageKey(period) {
+  const userId = currentUser?.user_id || 'anonymous';
+  const today = new Date().toISOString().slice(0, 10);
+  return `routine:${userId}:${today}:${period}`;
+}
+
+function saveRoutineCompletion(period, productId, done) {
+  const key = getRoutineStorageKey(period);
+  const existing = JSON.parse(localStorage.getItem(key) || '{}');
+  existing[productId] = done;
+  localStorage.setItem(key, JSON.stringify(existing));
+}
+
+function getRoutineCompletion(period) {
+  const key = getRoutineStorageKey(period);
+  return JSON.parse(localStorage.getItem(key) || '{}');
+}
+
+function createProductCheckboxItem(product, period) {
+  const li = document.createElement('li');
+  const id = `step-${period}-${product.product_id}`;
+  const stored = getRoutineCompletion(period);
+  const isChecked = !!stored[product.product_id];
+
+  li.innerHTML = `
+    <label>
+      <input type="checkbox" id="${id}" ${isChecked ? 'checked' : ''} />
+      ${product.name} <span class="step-type">(${product.step_type})</span>
+    </label>
+  `;
+
+  const checkbox = li.querySelector('input');
+  checkbox.addEventListener('change', () => {
+    saveRoutineCompletion(period, product.product_id, checkbox.checked);
+  });
+
+  return li;
+}
+
+goCommunityBtn.addEventListener('click', async () => {
+  communityError.classList.add('hidden');
+  postsList.innerHTML = '';
+  showScreen('community');
+
+  try {
+    const posts = await apiRequest('/community/posts', {
+      method: 'GET',
+      headers: authToken
+        ? {
+            Authorization: `Bearer ${authToken}`,
+          }
+        : {},
+    });
+
+    posts.forEach((post) => {
+      const li = document.createElement('li');
+      const author = post.user?.first_name || 'Anonymous';
+      li.textContent = `${author}: ${post.content}`;
+      postsList.appendChild(li);
+    });
+  } catch (error) {
+    communityError.textContent = error.message;
+    communityError.classList.remove('hidden');
+  }
+});
+
+postForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  communityError.classList.add('hidden');
+
+  const content = postContentInput.value.trim();
+  if (!content) return;
+
+  try {
+    await apiRequest('/community/posts', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({ content }),
+    });
+    postContentInput.value = '';
+    goCommunityBtn.click();
+  } catch (error) {
+    communityError.textContent = error.message;
+    communityError.classList.remove('hidden');
+  }
+});
+
+backToDashboardFromCommunityBtn.addEventListener('click', () => {
+  showScreen('dashboard');
+});
+
 setAuthMode(true);
 showScreen('auth');
 

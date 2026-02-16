@@ -1,7 +1,6 @@
 import { Sequelize } from 'sequelize';
 import path from 'path';
 import { app_config } from './env';
-import '../models';
 
 /**
  * Sequelize instance for the application.

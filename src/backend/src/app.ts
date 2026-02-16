@@ -3,11 +3,12 @@ import cors from 'cors';
 import path from 'path';
 import { auth_routes } from './api/routes/authRoutes';
 import { routine_routes } from './api/routes/routineRoutes';
+import { profile_routes } from './api/routes/profileRoutes';
+import { community_routes } from './api/routes/communityRoutes';
 
 /**
  * Creates and configures the Express application.
- * API routes for auth, profiles, products, routines, and community
- * will be registered here in dedicated modules.
+ * Serves the HTML/JS frontend and exposes API routes.
  */
 export function create_app(): Application {
   const app = express();
@@ -26,10 +27,10 @@ export function create_app(): Application {
 
   // Core API routes
   app.use('/auth', auth_routes);
-  // app.use('/profiles', profileRoutes);
-  // app.use('/products', productRoutes);
+  app.use('/profiles', profile_routes);
+  // app.use('/products', productRoutes); // future extension
   app.use('/routines', routine_routes);
-  // app.use('/community', communityRoutes);
+  app.use('/community', community_routes);
 
   // Fallback to index.html for root path (basic SPA behavior)
   app.get('/', (_req, res) => {

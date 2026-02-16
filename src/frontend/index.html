@@ -40,12 +40,51 @@
         </button>
       </section>
 
-      <!-- Skin Type Selection Screen -->
+      <!-- Skin Type & Extended Questionnaire Screen -->
       <section id="skin-screen" class="screen">
         <h2>Select your skin type</h2>
         <p class="screen-description">
-          Choose the option that best describes your skin.
+          Choose the option that best describes your skin and answer a few quick questions.
         </p>
+
+        <div class="form-group">
+          <label for="age">Age</label>
+          <input id="age" type="number" min="10" max="99" />
+        </div>
+
+        <div class="form-group">
+          <label for="dark-circles">Dark circles</label>
+          <select id="dark-circles">
+            <option value="none">None</option>
+            <option value="mild">Mild</option>
+            <option value="strong">Strong</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="acne">Acne / breakouts</label>
+          <select id="acne">
+            <option value="none">None</option>
+            <option value="mild">Mild</option>
+            <option value="moderate">Moderate</option>
+            <option value="severe">Severe</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="dryness">Dryness</label>
+          <select id="dryness">
+            <option value="none">None</option>
+            <option value="mild">A bit dry</option>
+            <option value="strong">Very dry</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="budget">Monthly budget (₪)</label>
+          <input id="budget" type="number" min="0" step="50" />
+        </div>
+
         <div id="skin-options" class="card-grid">
           <button class="card" data-skin="Oily">
             <h3>Oily</h3>
@@ -72,6 +111,9 @@
         <button id="view-routine" class="primary-button">
           View my recommended routine
         </button>
+        <button id="go-community" class="secondary-button" style="margin-top: 12px">
+          Community feed
+        </button>
       </section>
 
       <!-- Routine Screen -->
@@ -90,6 +132,26 @@
           </div>
         </div>
         <button id="back-to-dashboard" class="secondary-button">
+          Back to dashboard
+        </button>
+      </section>
+
+      <!-- Community Screen -->
+      <section id="community-screen" class="screen">
+        <h2>PersonalSkin Community</h2>
+        <p class="screen-description">
+          Share your routine and see what works for others.
+        </p>
+        <div id="community-error" class="error hidden"></div>
+        <form id="post-form">
+          <div class="form-group">
+            <label for="post-content">Share your routine or experience</label>
+            <textarea id="post-content" rows="3"></textarea>
+          </div>
+          <button type="submit" class="primary-button">Post</button>
+        </form>
+        <ul id="posts-list" class="product-list" style="margin-top: 16px"></ul>
+        <button id="back-to-dashboard-from-community" class="secondary-button">
           Back to dashboard
         </button>
       </section>
