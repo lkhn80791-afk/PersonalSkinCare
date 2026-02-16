@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>PersonalSkin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-container">
+      <header class="app-header">
+        <h1>PersonalSkin</h1>
+        <p class="subtitle">Personalized skincare routines in your browser.</p>
+      </header>
+
+      <!-- Auth Screen -->
+      <section id="auth-screen" class="screen active">
+        <h2 id="auth-title">Welcome back</h2>
+        <p class="screen-description">
+          Sign in to manage your routines and track your skin journey.
+        </p>
+        <div id="auth-error" class="error hidden"></div>
+        <form id="auth-form">
+          <div class="form-group">
+            <label for="auth-email">Email</label>
+            <input id="auth-email" type="email" required />
+          </div>
+          <div class="form-group" id="first-name-group">
+            <label for="auth-first-name">First name</label>
+            <input id="auth-first-name" type="text" />
+          </div>
+          <div class="form-group">
+            <label for="auth-password">Password</label>
+            <input id="auth-password" type="password" required />
+          </div>
+          <button type="submit" id="auth-submit" class="primary-button">Log in</button>
+        </form>
+        <button id="auth-toggle" class="link-button">
+          New here? Create an account
+        </button>
+      </section>
+
+      <!-- Skin Type Selection Screen -->
+      <section id="skin-screen" class="screen">
+        <h2>Select your skin type</h2>
+        <p class="screen-description">
+          Choose the option that best describes your skin.
+        </p>
+        <div id="skin-options" class="card-grid">
+          <button class="card" data-skin="Oily">
+            <h3>Oily</h3>
+            <p>Shiny throughout the day with visible pores and breakouts.</p>
+          </button>
+          <button class="card" data-skin="Dry">
+            <h3>Dry</h3>
+            <p>Feels tight, flaky, or rough, especially after cleansing.</p>
+          </button>
+          <button class="card" data-skin="Combination">
+            <h3>Combination</h3>
+            <p>Oily in the T-zone and dry elsewhere.</p>
+          </button>
+        </div>
+      </section>
+
+      <!-- Dashboard Screen -->
+      <section id="dashboard-screen" class="screen">
+        <h2 id="dashboard-title">Hi, User</h2>
+        <p id="dashboard-skin" class="screen-description"></p>
+        <p>
+          Generate a personalized morning and evening routine based on your profile.
+        </p>
+        <button id="view-routine" class="primary-button">
+          View my recommended routine
+        </button>
+      </section>
+
+      <!-- Routine Screen -->
+      <section id="routine-screen" class="screen">
+        <h2>Your routine</h2>
+        <div id="routine-error" class="error hidden"></div>
+        <div id="routine-loading" class="loading hidden">Loading routine…</div>
+        <div id="routine-content" class="routine-layout hidden">
+          <div>
+            <h3>Morning</h3>
+            <ul id="morning-list" class="product-list"></ul>
+          </div>
+          <div>
+            <h3>Evening</h3>
+            <ul id="evening-list" class="product-list"></ul>
+          </div>
+        </div>
+        <button id="back-to-dashboard" class="secondary-button">
+          Back to dashboard
+        </button>
+      </section>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+  </html>
+
